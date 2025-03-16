@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/* success
+  color: #006609;
+  background-color: #0066093a;
+  border-color: #006609;
+*/
+
+body {
+  overflow: hidden;
+}
+
+.p-grid {
+  display: grid;
+  grid-template-columns: 50% 0.4% 49.6%;
+}
+
+.gutter-col {
+  grid-row: 1/-1;
+  cursor: col-resize;
+}
+
+.gutter-col-1 {
+  grid-column: 2;
+}
+
+/* ---- HEADER ---- */
+
+.btn-action {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-action.active {
+  color: #fff;
+  background-color: #ffffff3a;
+  border-color: #999999;
+}
+
+.btn-action:hover {
+  text-decoration: underline;
+}
+
+/* ---- OUTPUT ---- */
+#output {
+  height: calc(100vh - 43px);
+}
+
+#output hr {
+  opacity: 0.5;
+}
+
+#output hr:first-child {
+  display: none;
+}
+
+#output p {
+  padding: 2px 4px;
+  margin: 2px 0;
+  color: #bcffab;
+}
+
+#output p.error {
+  color: #a80101;
+  background-color: #a801012d;
+}
+
+/* ---- TEST ---- */
+#test {
+  height: calc(100vh - 43px);
+}

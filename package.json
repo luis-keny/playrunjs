@@ -1,0 +1,28 @@
+{
+  "name": "executejs",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "standard": "17.1.2",
+    "vite": "6.2.0"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "4.0.14",
+    "js-base64": "^3.7.7",
+    "monaco-editor": "0.52.2",
+    "quill": "2.0.3",
+    "split-grid": "1.0.11",
+    "tailwindcss": "4.0.14"
+  },
+  "eslintConfig": {
+    "extends": [
+      "./node_modules/standard/eslintrc.json"
+    ]
+  }
+}
