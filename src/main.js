@@ -26,7 +26,8 @@ function executeCode (code) {
 
   iframeWindow.console.log = function (...args) {
     args.forEach((arg) => {
-      const output = typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+      let output = typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+      output = output.replace(/\n/g, '<br/>')
       $output.innerHTML += `<hr/><p>${output}</p>`
     })
   }
@@ -60,6 +61,9 @@ function executeCode (code) {
     /while\s*\(\s*[0-9]+\s*\)/i, // while(1), while(42)
     /setInterval\s*\(\s*.*\s*,\s*[0-9]+\s*\)/i, // setInterval muy rápido
     /setTimeout\s*\(\s*.*\s*,\s*0\s*\)/i, // setTimeout con autorecursión
+
+    // No se puede asignar un valor dentro de un if
+    /if\s*\(\s*\w+\s*=\s*[^=!<>].+?\s*\)/i,
 
     // Recursión sin caso base
     /function\s+\w+\s*\([^)]*\)\s*{\s*.*\1\s*\(/i, // Recursión simple
