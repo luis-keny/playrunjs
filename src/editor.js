@@ -1,11 +1,9 @@
 import * as monaco from 'monaco-editor'
+import JsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 
 window.MonacoEnvironment = {
-  getWorkerUrl: function (moduleId, label) {
-    if (label === 'typescript' || label === 'javascript') {
-      return './ts.worker.bundle.js'
-    }
-    return './editor.worker.bundle.js'
+  getWorker: function () {
+    return new JsWorker()
   }
 }
 
