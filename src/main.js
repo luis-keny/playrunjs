@@ -1,14 +1,10 @@
-import { $, $$ } from './utils'
+import { $ } from './utils'
 import { encode, decode } from 'js-base64'
-import Quill from 'quill'
 import Split from 'split-grid'
 import { createEditor } from './editor'
 
-const $btns = $$('.btn-action')
 const $iframe = $('#iframe')
 const $output = $('#output')
-const $test = $('#test')
-const $btnSaveQuill = $('#save-text-editor')
 
 Split({
   minSize: 5,
@@ -16,22 +12,6 @@ Split({
     track: 1,
     element: document.querySelector('.gutter-col-1')
   }]
-})
-
-const quill = new Quill('#text-editor', {
-  theme: 'snow',
-  modules: {
-    toolbar: [
-      [{ header: '1' }, { header: '2' }, { font: [] }],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      [{ align: [] }],
-      ['bold', 'italic', 'underline'],
-      ['code-block'],
-      ['link'],
-      [{ color: [] }, { background: [] }],
-      ['image']
-    ]
-  }
 })
 
 const jsEditor = createEditor($('#editor'))
@@ -117,20 +97,6 @@ function executeCode (code) {
 jsEditor.onDidChangeModelContent(() => {
   $output.innerHTML = ''
   executeCode(jsEditor.getValue())
-})
-
-$btns.forEach((btn, index) => {
-  btn.addEventListener('click', () => {
-    const isActiveOutput = index === 0
-    $output.classList.toggle('hidden', !isActiveOutput)
-    $test.classList.toggle('hidden', isActiveOutput)
-    $btns[0].classList.toggle('active', isActiveOutput)
-    $btns[1].classList.toggle('active', !isActiveOutput)
-  })
-})
-
-$btnSaveQuill.addEventListener('click', () => {
-  $('#content-display').innerHTML = quill.root.innerHTML
 })
 
 document.addEventListener('DOMContentLoaded', () => {
