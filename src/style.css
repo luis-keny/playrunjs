@@ -54,10 +54,15 @@ body {
   display: none;
 }
 
+#output span.position {
+  color: #99999980;
+  font-weight: 700;
+  user-select: none;
+}
+
 #output p {
   padding: 2px 4px;
   margin: 2px 0;
-  color: #bcffab;
 }
 
 #output p.error {
@@ -65,7 +70,9 @@ body {
   background-color: #a801012d;
 }
 
-/* ---- TEST ---- */
-#test {
-  height: calc(100vh - 43px);
-}
+#output .console-error,
+#output .error { color: #a80101; background-color: #a801012d; }
+#output .console-warn { color: #ff9900; background-color: #ff99002d; }
+#output .console-info { color: #0066cc; background-color: #0066cc2d; }
+#output .console-debug { color: #666666; background-color: #6666662d; }
+#output .console-log { color: #bcffab; }
