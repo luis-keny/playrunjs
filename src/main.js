@@ -129,7 +129,7 @@ function executeCode (code) {
 
   for (const pattern of dangerousPatterns) {
     if (pattern.test(code)) {
-      $output.innerHTML += `<p class="error">Error de seguridad: Se detectó un patrón potencialmente peligroso: ${pattern}</p>`
+      $output.innerHTML += `<p class="error">Security error: A potentially dangerous pattern was detected: ${pattern}</p>`
       return
     }
   }
@@ -152,7 +152,7 @@ function executeCode (code) {
   `
 
   const timeoutId = setTimeout(() => {
-    $output.innerHTML += '<p class="error">Error: Se detectó un posible bucle infinito o código que tarda demasiado en ejecutarse (límite de 3 segundos excedido)</p>'
+    $output.innerHTML += '<p class="error">Error: Possible infinite loop or code taking too long to execute (3 second limit exceeded) was detected.</p>'
   }, 3000)
 
   try {
