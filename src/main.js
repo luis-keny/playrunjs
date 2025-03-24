@@ -1,10 +1,29 @@
 import { $ } from './utils'
 import { encode, decode } from 'js-base64'
 import Split from 'split-grid'
-import { createEditor } from './editor'
+import { createEditor } from './components/editor/editor'
+import { Notification } from './components/notification/notification'
+
+import { createIcons, SquareArrowOutUpRight, Settings, FolderDown } from 'lucide'
+
+createIcons({
+  icons: {
+    SquareArrowOutUpRight,
+    Settings,
+    FolderDown
+  }
+})
 
 const $iframe = $('#iframe')
 const $output = $('#output')
+const $copyLink = $('#copy-link')
+// const $setting = $('#setting')
+
+const $importCode = $('#import-code')
+const $importCodeModal = $('#import-code-modal')
+const $importCodeCancel = $('#import-code-cancel')
+const $importCodeInput = $('#import-code-input')
+const $importCodeButton = $('#import-code-generate')
 
 Split({
   minSize: 5,
@@ -175,6 +194,41 @@ jsEditor.onDidChangeModelContent(() => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const codeUrl = window.location.pathname.slice(1)
+  $('#base-url').textContent = window.location.origin + '/'
   if (codeUrl !== '') jsEditor.setValue(decode(codeUrl))
   executeCode(jsEditor.getValue())
+})
+
+$copyLink.addEventListener('click', () => {
+  const url = window.location.href
+
+  if (!navigator.clipboard) {
+    Notification.add('warning', 'Clipboard API not available')
+    return
+  }
+
+  navigator.clipboard.writeText(url)
+    .then(() => {
+      Notification.add('success', 'Copied to clipboard')
+    })
+    .catch(() => {
+      Notification.add('danger', 'Failed to copy to clipboard')
+    })
+})
+
+$importCode.addEventListener('click', () => {
+  $importCodeModal.showModal()
+})
+
+$importCodeCancel.addEventListener('click', () => {
+  $importCodeModal.close()
+})
+
+$importCodeButton.addEventListener('click', () => {
+  const urlBase = window.location.href
+  const inputValue = $importCodeInput.value.replace(urlBase, '')
+  $importCodeInput.value = ''
+  jsEditor.setValue(decode(inputValue))
+  executeCode(jsEditor.getValue())
+  $importCodeModal.close()
 })

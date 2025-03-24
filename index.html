@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="stylesheet" href="./src/style.css">
+    <link rel="stylesheet" href="./src/components/notification/notification.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Play Run JS</title>
   </head>
@@ -12,8 +13,21 @@
       <div id="editor"></div>
       <div class="gutter-col gutter-col-1 bg-slate-500 hover:bg-slate-300 active:bg-sky-900"></div>
       <div>
-        <header class="flex px-2 items-center justify-end">
-          <h1 class="text-2xl">PlayRunJS</h1>
+        <header class="flex px-2 items-center justify-between">
+          <div class="flex gap-1">
+            <button id="copy-link" class="p-1 hover:bg-white/20 cursor-pointer rounded-sm relative flex justify-center group">
+              <i data-lucide="square-arrow-out-up-right"></i>
+              <span class="hidden absolute text-nowrap top-[110%] px-2 py-1 rounded-sm bg-slate-800 border border-slate-500 group-hover:block">Copiar link</span>
+            </button>
+            <button id="import-code" command="showModal" commandfor="import-code-modal" class="p-1 hover:bg-white/20 cursor-pointer rounded-sm relative flex justify-center group">
+              <i data-lucide="folder-down" class=""></i>
+              <span class="hidden absolute text-nowrap top-[110%] px-2 py-1 rounded-sm bg-slate-800 border border-slate-500 group-hover:block">Importar código</span>
+            </button>
+            <!-- <button id="setting" class="p-1 hover:bg-white/20 cursor-pointer rounded-sm relative flex justify-center group">
+              <i data-lucide="settings" class=""></i>
+              <span class="hidden absolute text-nowrap top-[110%] px-2 py-1 rounded-sm bg-slate-800 border border-slate-500 group-hover:block">Configuración</span>
+            </button> -->
+          </div>
           <a href="https://github.com/luis-keny/playrunjs" target="_blank" class="hover:opacity-80 m-2">
             <svg
               viewBox="0 0 256 250"
@@ -31,6 +45,29 @@
       </div>
       <iframe id="iframe" class="hidden"></iframe>
     </div>
+
+    <dialog id="import-code-modal" class="fixed top-1/2 left-1/2 -translate-1/2 backdrop:bg-slate-900/50 backdrop:backdrop-blur-[4px] p-4 bg-slate-800 rounded-md" closedby="any">
+      <div class="space-y-2">
+        <h1 class="text-slate-50 text-2xl font-semibold">Importar código</h1>
+        <p class="text-slate-300">
+          Los navegadores web tienen un límite en la longitud de las URLs que pueden manejar. Entonces, 
+          para solucionar este problema se ideo la funcionalidad de importar la url recopilado y 
+          generar el codigo en el editor.
+        </p>
+        <div class="grid grid-cols-[auto_1fr] rounded-sm border border-slate-500 overflow-hidden">
+          <span id="base-url" class="p-2 border-r border-slate-500 bg-slate-700 text-slate-200"></span>
+          <div class="p-2 bg-slate-100">
+            <input type="text" class="outline-none bg-transparent w-full" id="import-code-input" placeholder="Pegar Url" />
+          </div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button id="import-code-cancel" class="cursor-pointer py-2 px-4 rounded-sm bg-transparent border border-slate-300 text-slate-300 hover:bg-slate-500/30 font-semibold">Cancelar</button>
+          <button id="import-code-generate" class="cursor-pointer py-2 px-4 rounded-sm bg-slate-400 border border-slate-300 text-slate-800 hover:bg-slate-300 font-semibold">Importar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <div class="notifications-container"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
