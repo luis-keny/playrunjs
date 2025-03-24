@@ -166,7 +166,10 @@ function executeCode (code) {
     }, 100);
     
     // Código original con instrumentación
-    ${code.replace(/for\s*\(|while\s*\(|do\s*{/g, match => `${match} __loopCounter++;`)}
+    ${code.replace(
+      /(for\s*\(.*?\)|while\s*\(.*?\)|do)\s*\{/g,
+      '$1 { __loopCounter++;'
+    )}
     
     // Limpiar el intervalo al finalizar
     clearInterval(__loopCheckInterval);
