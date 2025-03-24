@@ -4,11 +4,12 @@ import Split from 'split-grid'
 import { createEditor } from './components/editor/editor'
 import { Notification } from './components/notification/notification'
 
-import { createIcons, SquareArrowOutUpRight, Settings, FolderDown } from 'lucide'
+import { createIcons, ClipboardCopy, Copy, Settings, FolderDown } from 'lucide'
 
 createIcons({
   icons: {
-    SquareArrowOutUpRight,
+    ClipboardCopy,
+    Copy,
     Settings,
     FolderDown
   }
@@ -17,6 +18,7 @@ createIcons({
 const $iframe = $('#iframe')
 const $output = $('#output')
 const $copyLink = $('#copy-link')
+const $copyCode = $('#copy-code')
 // const $setting = $('#setting')
 
 const $importCode = $('#import-code')
@@ -197,6 +199,16 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#base-url').textContent = window.location.origin + '/'
   if (codeUrl !== '') jsEditor.setValue(decode(codeUrl))
   executeCode(jsEditor.getValue())
+})
+
+$copyCode.addEventListener('click', () => {
+  navigator.clipboard.writeText(jsEditor.getValue())
+    .then(() => {
+      Notification.add('success', 'Copied to clipboard')
+    })
+    .catch(() => {
+      Notification.add('danger', 'Failed to copy to clipboard')
+    })
 })
 
 $copyLink.addEventListener('click', () => {
