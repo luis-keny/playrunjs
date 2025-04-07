@@ -318,7 +318,7 @@ $importCodeCancel.addEventListener('click', () => {
 })
 
 $importCodeButton.addEventListener('click', () => {
-  const urlBase = window.location.href
+  const urlBase = window.location.origin + '/'
   const inputValue = $importCodeInput.value.replace(urlBase, '')
   $importCodeInput.value = ''
   jsEditor.setValue(decode(inputValue))
