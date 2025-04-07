@@ -45,34 +45,37 @@ function executeCode (code) {
   iframeDocument.close()
 
   const consoleMethods = ['log', 'info', 'warn', 'error', 'debug']
+  const consoleLocations = findAllConsoleLocations(code)
 
   consoleMethods.forEach(method => {
     iframeWindow.console[method] = function (...args) {
-      const outputs = args.map(arg =>
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+      const location = consoleLocations.find(loc =>
+        loc.method === method && !loc.used
       )
+      if (location) {
+        location.used = true
 
-      const output = outputs.join(' ').replace(/\n/g, '<br/>')
-      let className = ''
+        // Resto de tu lógica para mostrar el output...
+        const outputs = args.map(arg => {
+          const typeArg = typeof arg
+          if (typeArg === 'object') return arg === null ? 'null' : JSON.stringify(arg, null, 2)
+          if (typeArg === 'string') return arg
+          return String(arg)
+        })
 
-      switch (method) {
-        case 'error':
-          className = 'console-error'
-          break
-        case 'warn':
-          className = 'console-warn'
-          break
-        case 'info':
-          className = 'console-info'
-          break
-        case 'debug':
-          className = 'console-debug'
-          break
-        default:
-          className = 'console-log'
+        const output = outputs.join(' ').replace(/\n/g, '<br/>')
+        const className = `console-${method}`
+
+        $output.innerHTML += `
+          <hr/>
+          <div class="result-console ${className}">
+            <p>${output}</p>
+            <span class="console-location" data-line="${location.line}" data-column="${location.column}">
+              line ${location.line}:${location.column}
+            </span>
+          </div>
+        `
       }
-
-      $output.innerHTML += `<hr/><p class="${className}">${method === 'log' ? '' : `[${method.toUpperCase()}] `}${output}</p>`
     }
   })
 
@@ -83,6 +86,25 @@ function executeCode (code) {
     { pattern: /for\s*\(\s*;\s*true\s*;\s*\)/i, name: 'for(;true;)' },
     { pattern: /do\s*{[\s\S]*}\s*while\s*\(\s*true\s*\)/i, name: 'do {...} while (true)' }
   ]
+
+  function findAllConsoleLocations (code) {
+    const regex = /console\.(log|error|warn|info|debug|assert|dir|dirxml|trace|group|groupEnd|time|timeEnd|count|clear|table)\s*\(/g
+    const locations = []
+    const lines = code.split('\n')
+
+    lines.forEach((line, lineIndex) => {
+      let match
+      while ((match = regex.exec(line)) !== null) {
+        locations.push({
+          line: lineIndex + 1,
+          column: match.index + 1,
+          method: match[1],
+          fullMatch: match[0]
+        })
+      }
+    })
+    return locations
+  }
 
   function findLineAndColumn (code, regex) {
     const lines = code.split('\n')
@@ -117,6 +139,52 @@ function executeCode (code) {
     }
 
     return null
+  }
+
+  function findErrorLocation (error, code) {
+    // 1. Primero intentamos extraer la ubicación del stack trace del iframe
+    const iframeLineMatch = error.stack.match(/at eval.*eval.*<anonymous>:(\d+):(\d+)/)
+    if (iframeLineMatch) {
+      const offset = 11
+      return {
+        line: parseInt(iframeLineMatch[1] - offset),
+        column: parseInt(iframeLineMatch[2]),
+        text: error.message
+      }
+    }
+
+    // 2. Si no funciona, buscamos en el código instrumentado
+    const instrumentedMatch = error.stack.match(/at.*instrumentedCode.*<anonymous>:(\d+):(\d+)/)
+    if (instrumentedMatch) {
+      const offset = 8
+      return {
+        line: parseInt(instrumentedMatch[1]) - offset,
+        column: parseInt(instrumentedMatch[2]),
+        text: error.message
+      }
+    }
+
+    // 3. Como último recurso, buscamos el mensaje de error en el código original
+    try {
+      const errorPattern = new RegExp(
+        error.message
+          .split('\n')[0]
+          .replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+        'i'
+      )
+
+      const location = findLineAndColumn(code, errorPattern)
+      if (location) return location
+    } catch (e) {
+      console.warn('No se pudo crear patrón para buscar el error:', e)
+    }
+
+    // 4. Si todo falla, devolvemos una ubicación por defecto
+    return {
+      line: 1,
+      column: 1,
+      text: error.message
+    }
   }
 
   for (const { pattern, name } of infiniteLoopPatterns) {
@@ -184,7 +252,17 @@ function executeCode (code) {
     clearTimeout(timeoutId)
   } catch (error) {
     clearTimeout(timeoutId)
-    $output.innerHTML += `<hr/><p class="error">${error.message}</p>`
+    const location = findErrorLocation(error, code)
+
+    $output.innerHTML += `
+    <hr/>
+    <div class="result-console console-error">
+      <p>${error.message}</p>
+      <span class="console-location" data-line="${location.line}" data-column="${location.column}">
+        line ${location.line}:${location.column}
+      </span>
+    </div>
+    `
   } finally {
     const newUrl = window.location.origin + '/' + encode(code)
     // eslint-disable-next-line no-undef
@@ -246,4 +324,17 @@ $importCodeButton.addEventListener('click', () => {
   jsEditor.setValue(decode(inputValue))
   executeCode(jsEditor.getValue())
   $importCodeModal.close()
+})
+
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.console-location')) {
+    const consoleLocation = e.target
+    if (consoleLocation) {
+      const line = parseInt(consoleLocation.getAttribute('data-line'))
+      const column = parseInt(consoleLocation.getAttribute('data-column'))
+      jsEditor.setPosition({ lineNumber: line, column })
+      jsEditor.focus()
+      jsEditor.revealLineInCenter(line)
+    }
+  }
 })

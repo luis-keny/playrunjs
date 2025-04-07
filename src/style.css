@@ -70,6 +70,23 @@ body {
   background-color: #a801012d;
 }
 
+#output .result-console {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+#output .result-console span {
+  height: fit-content;
+  font-size: 0.8em;
+  color: #99999980;
+  font-weight: 700;
+  user-select: none;
+  cursor: pointer;
+}
+
+#output .result-console span:hover {
+  text-decoration: underline;
+}
+
 #output .console-error,
 #output .error { color: #a80101; background-color: #a801012d; }
 #output .console-warn { color: #ff9900; background-color: #ff99002d; }
